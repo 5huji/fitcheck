@@ -7,34 +7,22 @@
 
 ---
 
-## 一、部署到 GitHub Pages（一次性，约 2 分钟）
+## 一、部署状态（已完成）
 
-### 1. 建仓库
-打开 https://github.com/new
-- **Repository name** 填 `fitcheck`
-- 选 **Public**（私有仓库用 GitHub Pages 需要付费）
-- **不要**勾选 Add a README / .gitignore / license，要一个完全空的仓库
-- 点 Create repository
+**线上地址：https://5huji.github.io/fitcheck/**
 
-### 2. 推代码
-仓库建好后，在终端里执行（把代码推上去）：
+仓库：https://github.com/5huji/fitcheck
 
-```bash
-cd <本项目目录>
-git push -u origin main
-```
+| 项目 | 状态 |
+|---|---|
+| 代码推送 | ✅ 已完成（`main` 与 `gh-pages` 两个分支内容一致） |
+| GitHub Pages | ✅ 已开启，**服务分支是 `gh-pages`**，目录 `/ (root)` |
+| HTTPS | ✅ 有效（网页通知、屏幕常亮都要求 HTTPS） |
+| 离线缓存（Service Worker） | ✅ 生效 |
 
-### 3. 打开 Pages
-仓库页面 → **Settings** → 左侧 **Pages**
-- Source 选 **Deploy from a branch**
-- Branch 选 **main**，目录选 **/ (root)**
-- 点 Save
-
-等 1 分钟左右，访问地址就是：
-
-```
-https://5huji.github.io/fitcheck/
-```
+> ⚠️ **维护须知**：网站读的是 **`gh-pages`** 分支，不是 `main`。
+> 所以**不要在 GitHub 网页上直接编辑文件**（网页改的是 `main`，改了网站不会变）。
+> 要改就直接说一声，从本地改完两个分支一起推。
 
 ---
 
@@ -157,14 +145,15 @@ https://5huji.github.io/fitcheck/
   首页统计条加一格
 - **数据分析趋势图**：`computeStats()` 已经算好每月次数，用 SVG 手绘折线即可
 
-改完推上去：
+改完推上去（**两个分支都要推**，网站读的是 `gh-pages`）：
 
 ```bash
-git add -A && git commit -m "说明改了什么" && git push
+git add -A && git commit -m "说明改了什么"
+git push origin main gh-pages
 ```
 
-Pages 会自动更新，手机刷新一下就生效（Service Worker 用的是「网络优先」策略，
-联网时永远拿最新代码，断网才用缓存）。
+Pages 会自动重新构建（约 1 分钟）。手机上刷新一下就生效（Service Worker 用的是「网络优先」策略，
+联网时永远拿最新代码，断网才用缓存）。如果发现没更新，把主屏图标删掉重新添加一次即可。
 
 ---
 
