@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>健身打卡</title>
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="description" content="个人健身打卡与训练计时">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="健身打卡">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" href="./app.css">
+</head>
+<body>
+
+<main id="main">
+
+  <!-- ===================== ① 今日 ===================== -->
+  <section class="page is-active" id="page-today">
+    <header class="nav"><h1>今日训练</h1></header>
+
+    <div class="scroll">
+      <div class="card" id="todayStatusCard">
+        <div class="status-row">
+          <div class="status-icon" id="todayIcon">○</div>
+          <div>
+            <div class="status-title" id="todayTitle">今日未完成</div>
+            <div class="status-sub" id="todayDate"></div>
+          </div>
+        </div>
+        <div id="todayDetail" class="today-detail" hidden></div>
+      </div>
+
+      <div class="stat-strip">
+        <div class="stat">
+          <div class="stat-value"><span id="statStreak">0</span><span class="unit">天</span></div>
+          <div class="stat-label">连续打卡</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value"><span id="statTotal">0</span><span class="unit">次</span></div>
+          <div class="stat-label">累计训练</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value small" id="statLast">—</div>
+          <div class="stat-label">最近训练</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btnStart">开始训练</button>
+      <button class="btn btn-primary-solid btn-block" id="btnCheckin">完成打卡</button>
+      <div class="btn-row" id="todayExtra" hidden>
+        <button class="btn" id="btnEditToday">修改今日打卡</button>
+        <button class="btn btn-danger" id="btnUndoToday">撤销</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ② 计时 ===================== -->
+  <section class="page" id="page-timer">
+    <header class="nav"><h1>训练计时</h1></header>
+
+    <div class="scroll">
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 240 240" aria-hidden="true">
+          <circle class="ring-bg" cx="120" cy="120" r="104"></circle>
+          <circle class="ring-fg" id="ringFg" cx="120" cy="120" r="104"
+                  stroke-dasharray="653.45" stroke-dashoffset="653.45"></circle>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-time" id="timerText">20:00</div>
+          <div class="ring-phase" id="timerPhase">准备开始</div>
+        </div>
+      </div>
+
+      <div class="banner banner-ok" id="finishedBanner" hidden>
+        <strong>训练时间结束</strong>
+        <p>训练时间结束，完成今天的训练吧！</p>
+        <button class="btn btn-primary-solid btn-block" id="btnGoCheckin">去打卡</button>
+      </div>
+
+      <div class="card" id="durationPanel">
+        <h2>选择训练时长</h2>
+        <div class="preset-grid" id="presetGrid"></div>
+        <div class="stepper-row">
+          <span>自定义</span>
+          <div class="stepper">
+            <button class="step-btn" id="stepMinus" aria-label="减少5分钟">−</button>
+            <span class="step-value" id="customMinutes">20 分钟</span>
+            <button class="step-btn" id="stepPlus" aria-label="增加5分钟">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary-solid btn-block" id="btnTimerMain">开始</button>
+        <button class="btn btn-block" id="btnTimerStop" disabled>结束</button>
+      </div>
+
+      <p class="hint" id="wakeLockHint" hidden>
+        训练期间屏幕会保持常亮，请不要锁屏或切到别的应用，否则到点提醒会被推迟到回到本页时。
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== ③ 记录 ===================== -->
+  <section class="page" id="page-history">
+    <header class="nav"><h1>训练记录</h1></header>
+
+    <div class="scroll">
+      <div class="stat-strip">
+        <div class="stat">
+          <div class="stat-value"><span id="hStatTotal">0</span><span class="unit">次</span></div>
+          <div class="stat-label">总训练次数</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value"><span id="hStatStreak">0</span><span class="unit">天</span></div>
+          <div class="stat-label">连续打卡</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value"><span id="hStatMonth">0</span><span class="unit">次</span></div>
+          <div class="stat-label">本月训练</div>
+        </div>
+      </div>
+
+      <div id="historyList"></div>
+
+      <div class="empty" id="historyEmpty" hidden>
+        <div class="empty-icon">○</div>
+        <p>还没有训练记录</p>
+        <p class="sub">去「今日」页面完成第一次打卡吧</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ④ 设置 ===================== -->
+  <section class="page" id="page-settings">
+    <header class="nav"><h1>设置</h1></header>
+
+    <div class="scroll">
+      <div class="group">
+        <div class="group-title">训练</div>
+        <div class="list">
+          <div class="row">
+            <label for="selectDefault">默认训练时长</label>
+            <select id="selectDefault"></select>
+          </div>
+          <div class="row">
+            <label for="toggleNotify">训练结束提醒</label>
+            <label class="switch"><input type="checkbox" id="toggleNotify"><span></span></label>
+          </div>
+          <div class="row">
+            <span>提醒方式</span>
+            <span class="muted" id="notifySupport">检测中…</span>
+          </div>
+        </div>
+        <p class="group-foot" id="notifyFoot"></p>
+      </div>
+
+      <div class="group">
+        <div class="group-title">数据</div>
+        <div class="list">
+          <div class="row"><span>训练记录条数</span><span class="muted" id="dataCount">0</span></div>
+          <button class="row row-btn" id="btnExport">导出备份（JSON）</button>
+          <button class="row row-btn danger" id="btnClearAll">清空全部记录</button>
+        </div>
+        <p class="group-foot">数据只保存在这台手机的浏览器里，不会上传到任何服务器。删掉主屏幕图标或清除 Safari 数据会一并丢失，建议偶尔导出备份。</p>
+      </div>
+
+      <div class="group">
+        <div class="group-title">关于</div>
+        <div class="list">
+          <div class="row"><span>版本</span><span class="muted" id="appVersion">1.0</span></div>
+          <div class="row"><span>运行模式</span><span class="muted" id="runMode">—</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== 底部标签栏 ===================== -->
+<nav class="tabbar" id="tabbar">
+  <button class="tab is-active" data-tab="today"><span class="tab-ico">◉</span>今日</button>
+  <button class="tab" data-tab="timer"><span class="tab-ico">◷</span>计时</button>
+  <button class="tab" data-tab="history"><span class="tab-ico">☰</span>记录</button>
+  <button class="tab" data-tab="settings"><span class="tab-ico">⚙</span>设置</button>
+</nav>
+
+<!-- ===================== 打卡弹窗 ===================== -->
+<div class="sheet-mask" id="sheetMask" hidden>
+  <div class="sheet" id="sheet">
+    <div class="sheet-head">
+      <button class="sheet-cancel" id="sheetCancel">取消</button>
+      <h2 id="sheetTitle">完成打卡</h2>
+      <span class="sheet-cancel" style="visibility:hidden">取消</span>
+    </div>
+    <div class="sheet-body">
+      <div class="field-label">今天感觉怎么样？</div>
+      <div class="fatigue-row" id="fatigueRow"></div>
+      <div class="field-label">训练备注（可选）</div>
+      <textarea id="noteInput" rows="3" placeholder="比如：今天练了胸和背，状态不错"></textarea>
+      <p class="hint" id="sheetDurationHint" hidden></p>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary-solid btn-block" id="sheetSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="./app.js"></script>
+</body>
+</html>
