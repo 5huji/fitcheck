@@ -4,7 +4,7 @@
    2. 通知接收：预留 web push 的接收能力（当前不需要服务器，暂时用不上）。
 */
 
-const CACHE = 'fitcheck-v1';
+const CACHE = 'fitcheck-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const ASSETS = [
   './icons/icon-180.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
+  './icons/icon-maskable-512.png',
 ];
 
 self.addEventListener('install', (event) => {
